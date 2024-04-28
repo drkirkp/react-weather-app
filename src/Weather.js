@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import FormattedDate from "./FormattedDate";
+import WeatherInfo from "./WeatherInfo";
 import axios from "axios";
 import "./Weather.css";
 import "./App.css";
@@ -22,15 +22,25 @@ export default function Weather(props) {
     });
   }
 
-  const apiKey = "c95d60a1e3adbeb286133f1ebebc2579";
+  function handleSubmit(event) {
+    event.preventDefault();
+    search();
+  }
 
-  let apiUrl =
-    "https://api.openweatherapp.org/data/2.5/weather?q=${city}&appid=${apiKey}&units=metric";
+  function handleCityChange(event) {
+    setCity(event.target.value);
+  }
+
+  function search() {
+    const apiKey = "c95d60a1e3adbeb286133f1ebebc2579";
+    let apiUrl = `https://api.openweatherapp.org/data/2.5/weather?q=${city}&appid=${apiKey}&units=metric`;
+    axios.get(apiUrl).then(handleResponse);
+  }
 
   if (weatherData.ready) {
     return (
       <div className="Weather">
-        <form>
+        <form onSubmit={handleSubmit}>
           <div className="row">
             <div className="col-9">
               <input
@@ -50,35 +60,7 @@ export default function Weather(props) {
             </div>
           </div>
         </form>
-        <h1>New York</h1>
-        <ul>
-          <li>
-            <FormattedDate date={weatherData.date} />
-          </li>
-          <li>Mostly Cloudy</li>
-        </ul>
-        <div className="row mt-3">
-          <div className="col-6">
-            <div className="clearfix">
-              <img
-                src="https://ssl.gstatic.com/onebox/weather/64/cloudy.png"
-                alt="cloudy"
-                className="float-left"
-              />
-              <div className="float-left">
-                <span className="temperature">14</span>
-                <span className="unit">°C</span>
-              </div>
-            </div>
-          </div>
-          <div className="col-6">
-            <ul>
-              <li>Precipitation: 15%</li>
-              <li>Humidity: 72%</li>
-              <li>Wind: 13 km/h</li>
-            </ul>
-          </div>
-        </div>
+        <WeatherInfo data={weatherData} />
       </div>
     );
   } else {
